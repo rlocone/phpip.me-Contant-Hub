@@ -28,7 +28,7 @@ export function middleware(request: NextRequest) {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' blob: data: https://*",
     "font-src 'self'",
-    "connect-src 'self' https://api.venice.ai",
+    "connect-src 'self' https://openrouter.ai",
     "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",

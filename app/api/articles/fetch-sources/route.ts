@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Use LLM API to generate search queries and find related sources
-    const apiKey = process.env.ABACUSAI_API_KEY;
+    const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
         { error: 'LLM API not configured' },
@@ -47,14 +47,14 @@ ${content ? `And this content preview: ${content.slice(0, 500)}...` : ''}
 Generate 3-5 specific search queries to find high-quality additional reading material on this topic. Return ONLY a JSON array of query strings, no other text.
 Example: ["query 1", "query 2", "query 3"]`;
 
-    const queryResponse = await fetch('https://routellm.abacus.ai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
+    const queryResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: *** ${process.env.OPENROUTER_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: 'openai/gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -107,14 +107,14 @@ Return ONLY a JSON array in this exact format, no other text:
 
 IMPORTANT: Return ONLY the JSON array, no markdown, no code blocks, no other text.`;
 
-    const sourceResponse = await fetch('https://routellm.abacus.ai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
+    const sourceResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: *** ${process.env.OPENROUTER_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: 'openai/gpt-4o-mini',
         messages: [
           {
             role: 'system',
