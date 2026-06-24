@@ -22,8 +22,8 @@ export async function GET() {
   // Build RSS XML with media namespace for rich content
   const rssItems = articles.map((article: any) => {
     const pubDate = article.publishedAt || article.createdAt;
-    const categories = article.categories.map((ac) => ac.category.name);
-    const tags = article.tags.map((at) => at.tag.name);
+    const categories = article.categories.map((ac: any) => ac.category.name);
+    const tags = article.tags.map((at: any) => at.tag.name);
     const allCategories = [...new Set([...categories, ...tags])];
     
     // Get the best image
