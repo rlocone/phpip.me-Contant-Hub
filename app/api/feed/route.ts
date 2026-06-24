@@ -105,8 +105,8 @@ export async function GET() {
       <link>${siteUrl}</link>
     </image>
     <copyright>© ${new Date().getFullYear()} phipi. All rights reserved.</copyright>
-    <managingEditor>admin@phipi.tech (phipi)</managingEditor>
-    <webMaster>admin@phipi.tech (phipi)</webMaster>
+    <managingEditor>${process.env.SITE_EMAIL || 'admin@phipi.tech'} (phipi)</managingEditor>
+    <webMaster>${process.env.SITE_EMAIL || 'admin@phipi.tech'} (phipi)</webMaster>
     <ttl>60</ttl>${rssItems}
   </channel>
 </rss>`;

@@ -46,21 +46,22 @@ async function main() {
     }
   }
 
-  // Create admin users
+  // Create admin users (passwords from env vars — never hardcode)
   const users = [
     {
-      email: 'john@doe.com',
-      password: 'johndoe123',
-      name: 'Test Admin',
-      role: 'admin',
-    },
-    {
-      email: 'admin@phipi.tech',
-      password: 'SecureAdmin2024!',
-      name: 'Admin User',
+      email: process.env.SEED_ADMIN_EMAIL || 'admin@phipi.tech',
+      password: process.env.SEED_ADMIN_PASSWORD,
+      name: process.env.SEED_ADMIN_NAME || 'Admin User',
       role: 'admin',
     },
   ];
+
+  if (!users[0].password) {
+    console.warn('⚠️  SEED_ADMIN_PASSWORD not set — skipping admin user creation');
+    console.log('✅ Database seeding completed!');
+    await prisma.$disconnect();
+    return;
+  }
 
   console.log('👤 Creating admin users...');
   for (const user of users) {

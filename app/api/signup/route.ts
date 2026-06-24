@@ -29,13 +29,22 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
+    // Signup is admin-only: gated behind SIGNUP_SECRET env var
+    const signupSecret = process.env.SIGNUP_SECRET;
+    if (!signupSecret || body.secret !== signupSecret) {
+      return NextResponse.json(
+        { error: 'Signup is disabled' },
+        { status: 403 }
+      );
+    }
+
+    // Create user with user role (admin promotion handled manually)
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         name: name || email.split('@')[0],
-        role: 'admin', // All users are admins for this content hub
+        role: 'user',
       },
     });
 

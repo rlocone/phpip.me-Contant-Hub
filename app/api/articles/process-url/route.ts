@@ -11,6 +11,34 @@ import { isRecallUrl, fetchRecallPage } from '@/lib/recall';
 
 export const dynamic = 'force-dynamic';
 
+// SSRF protection: only allow fetching from these domains
+const ALLOWED_FETCH_DOMAINS = [
+  /^[a-zA-Z0-9-]+\.(com|org|net|edu|gov|io|dev|app|ai|me|love)$/i,
+];
+
+function isAllowedFetchUrl(urlStr: string): boolean {
+  try {
+    const url = new URL(urlStr);
+    if (url.protocol !== 'https:') return false;
+    // Block private/internal IP ranges
+    const hostname = url.hostname;
+    if (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname === '0.0.0.0' ||
+      hostname.startsWith('10.') ||
+      hostname.startsWith('172.16.') ||
+      hostname.startsWith('192.168.') ||
+      hostname.startsWith('169.254.') ||
+      hostname.startsWith('[::1]') ||
+      hostname.startsWith('100.') // Tailscale/CGNAT range
+    ) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 // POST - Extract content from URL
 export async function POST(request: NextRequest) {
   try {
@@ -103,6 +131,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Regular article processing
+    // SSRF protection: block internal/private hosts
+    if (!isAllowedFetchUrl(url)) {
+      return NextResponse.json(
+        { error: 'URL not allowed — internal hosts are blocked' },
+        { status: 403 }
+      );
+    }
+
     const response = await fetch(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
