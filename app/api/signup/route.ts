@@ -5,7 +5,16 @@ import prisma from '@/lib/db';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password, name } = body;
+    const { email, password, name, secret } = body;
+
+    // Gate: signup requires SIGNUP_SECRET env var
+    const signupSecret = process.env.SIGNUP_SECRET;
+    if (!signupSecret || secret !== signupSecret) {
+      return NextResponse.json(
+        { error: 'Signup is disabled' },
+        { status: 403 }
+      );
+    }
 
     if (!email || !password) {
       return NextResponse.json(
@@ -28,15 +37,6 @@ export async function POST(request: NextRequest) {
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Signup is admin-only: gated behind SIGNUP_SECRET env var
-    const signupSecret = process.env.SIGNUP_SECRET;
-    if (!signupSecret || body.secret !== signupSecret) {
-      return NextResponse.json(
-        { error: 'Signup is disabled' },
-        { status: 403 }
-      );
-    }
 
     // Create user with user role (admin promotion handled manually)
     const user = await prisma.user.create({
